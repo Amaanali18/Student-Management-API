@@ -1,60 +1,90 @@
 package com.example.Student_Management_API.services.impl;
 
+import com.example.Student_Management_API.dtos.UserRequestDTO;
+import com.example.Student_Management_API.dtos.UserResponseDTO;
 import com.example.Student_Management_API.entities.Student;
 import com.example.Student_Management_API.repositories.StudentRepo;
 import com.example.Student_Management_API.services.StudentService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentSeviceImpl implements StudentService {
 
-    private StudentRepo studentRepo;
+    private final StudentRepo studentRepo;
 
     public StudentSeviceImpl(StudentRepo studentRepo) {
         this.studentRepo = studentRepo;
     }
 
+    // ── Mapping helpers ──────────────────────────────────────────────────────
+
+    private Student toEntity(UserRequestDTO dto) {
+        Student student = new Student();
+        student.setEnrollmentNumber(dto.getEnrollmentNumber());
+        student.setName(dto.getName());
+        student.setContactNumber(dto.getContactNumber());
+        student.setDepartment(dto.getDepartment());
+        student.setEmail(dto.getEmail());
+        return student;
+    }
+
+    private UserResponseDTO toResponseDTO(Student student) {
+        return UserResponseDTO.builder()
+                .id(student.getId())
+                .enrollmentNumber(student.getEnrollmentNumber())
+                .name(student.getName())
+                .contactNumber(student.getContactNumber())
+                .department(student.getDepartment())
+                .email(student.getEmail())
+                .build();
+    }
+
+    // ── Service methods ───────────────────────────────────────────────────────
+
     @Override
-    public List<Student> getAllStudents() {
-        return studentRepo.findAll();
+    public List<UserResponseDTO> getAllStudents() {
+        return studentRepo.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Student createStudent(Student student) {
+    public UserResponseDTO createStudent(UserRequestDTO userRequestDTO) {
+        Student student = toEntity(userRequestDTO);
         Student saved = studentRepo.save(student);
-        return saved;
+        return toResponseDTO(saved);
     }
 
     @Override
-    public Student updateStudent(Student student, Long enrollmentNumber) {
-        Student student1;
+    public UserResponseDTO updateStudent(UserRequestDTO userRequestDTO, Long enrollmentNumber) {
+        Student student;
         try {
-            student1=studentRepo.findByEnrollmentNumber(enrollmentNumber);
+            student = studentRepo.findByEnrollmentNumber(enrollmentNumber);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        student1.setName(student.getName());
-        student1.setEmail(student.getEmail());
-        student1.setContactNumber(student.getContactNumber());
-        student1.setDepartment(student.getDepartment());
-        Student updated = studentRepo.save(student1);
-        return updated;
+        student.setName(userRequestDTO.getName());
+        student.setEmail(userRequestDTO.getEmail());
+        student.setContactNumber(userRequestDTO.getContactNumber());
+        student.setDepartment(userRequestDTO.getDepartment());
+        Student updated = studentRepo.save(student);
+        return toResponseDTO(updated);
     }
 
     @Override
     public String deleteStudent(Long enrollmentNumber) {
         Student deleted = studentRepo.findByEnrollmentNumber(enrollmentNumber);
-        String message = "Deleted student with enrollment number " + enrollmentNumber;
         studentRepo.delete(deleted);
-        return message;
+        return "Deleted student with enrollment number " + enrollmentNumber;
     }
 
     @Override
-    public Student getStudent(Long enrollmentNumber) {
+    public UserResponseDTO getStudent(Long enrollmentNumber) {
         Student student = studentRepo.findByEnrollmentNumber(enrollmentNumber);
-        return student;
+        return toResponseDTO(student);
     }
 }

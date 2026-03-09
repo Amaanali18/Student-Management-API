@@ -1,15 +1,15 @@
 package com.example.Student_Management_API.services;
 
-import com.example.Student_Management_API.entities.Student;
-import org.springframework.stereotype.Service;
+import com.example.Student_Management_API.dtos.UserRequestDTO;
+import com.example.Student_Management_API.dtos.UserResponseDTO;
 
 import java.util.List;
 
 public interface StudentService {
 
-    public List<Student> getAllStudents();
-    public Student createStudent(Student student);
-    public Student updateStudent(Student student,Long enrollmentNumber);
-    public String deleteStudent(Long enrollmentNumber);
-    public Student getStudent(Long enrollmentNumber);
+    List<UserResponseDTO> getAllStudents();
+    UserResponseDTO createStudent(UserRequestDTO student);
+    UserResponseDTO updateStudent(UserRequestDTO student, Long enrollmentNumber);
+    String deleteStudent(Long enrollmentNumber);
+    UserResponseDTO getStudent(Long enrollmentNumber);
 }
