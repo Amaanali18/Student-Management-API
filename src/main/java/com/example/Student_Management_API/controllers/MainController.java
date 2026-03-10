@@ -21,7 +21,7 @@ public class MainController {
 
     @GetMapping("")
     public ResponseEntity<String> loadingBackend() {
-        return new ResponseEntity<>("Backend is Connected", HttpStatus.OK);
+        return new ResponseEntity<>("backendLoaded", HttpStatus.OK);
     }
 
     @GetMapping("all")
