@@ -1,4 +1,4 @@
-# Student Management API
+# Student Management API System
 
 This project is a Java Spring Boot application that provides a RESTful API for managing student data. The API allows for the creation, reading, updating, and deletion (CRUD) of student records. The backend is built using Java and the Spring Boot framework, ensuring a robust and scalable solution.
 
